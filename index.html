@@ -3,34 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>उड़वारिया - यादें और इतिहास</title>
+    <title>उड़वारिया - डिजिटल गाँव पोर्टल</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; }
-        header { background: #1a5276; color: white; padding: 30px; text-align: center; }
-        .container { max-width: 800px; margin: 20px auto; padding: 15px; }
-        .btn-add { display: block; background: #27ae60; color: white; text-align: center; padding: 15px; text-decoration: none; border-radius: 8px; margin-bottom: 25px; }
-        .post-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .post-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; display: none; } /* डिफ़ॉल्ट रूप से छुपी हुई */
-        h3 { color: #1a5276; margin: 10px 0; }
-        .author-info { margin-top: 15px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
-        .name-tag { font-weight: bold; color: #d35400; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f4f8; margin: 0; color: #333; }
+        header { background: linear-gradient(135deg, #1a5276, #2980b9); color: white; padding: 40px 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .container { max-width: 850px; margin: 30px auto; padding: 0 15px; }
+        .btn-add { display: block; background: #27ae60; color: white; text-align: center; padding: 16px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-bottom: 30px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-add:hover { background: #219150; transform: translateY(-2px); }
+        .post-card { background: white; padding: 25px; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); border-top: 6px solid #1a5276; overflow: hidden; }
+        .post-img { width: 100%; max-height: 450px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; display: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h3 { color: #1a5276; margin: 0 0 12px 0; font-size: 1.5em; }
+        .post-content { line-height: 1.7; font-size: 1.1em; color: #444; white-space: pre-wrap; }
+        .author-info { margin-top: 20px; font-size: 0.9em; color: #666; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .name-tag { color: #d35400; font-weight: bold; background: #fef5e7; padding: 4px 10px; border-radius: 4px; }
+        #loading { text-align: center; font-size: 1.2em; color: #666; margin-top: 50px; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>ग्राम उड़वारिया (रेवदर)</h1>
-    <p>गाँव की तस्वीरें और इतिहास साझा करें</p>
+    <p>गाँव का गौरवशाली इतिहास और सामूहिक यादें</p>
 </header>
 
 <div class="container">
-    <a href="https://forms.gle/आपका_असली_लिंक_यहाँ_आएगा" target="_blank" class="btn-add"> + अपनी जानकारी जोड़ें (एडमिन अप्रूवल के बाद दिखेगी)</a>
-    <div id="content-area">लोड हो रहा है...</div>
+    <!-- आपका असली गूगल फॉर्म लिंक यहाँ सेट है -->
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfL56kIkjL1DTFjuwwbnhvn9GFvBcFmc7l3IoSIFEzdiZqhVQ/viewform?usp=sf_link" target="_blank" class="btn-add"> + अपनी जानकारी और फोटो साझा करें </a>
+
+    <div id="content-area">
+        <div id="loading">उड़वारिया की जानकारियाँ लोड हो रही हैं...</div>
+    </div>
 </div>
 
 <script>
-    const sheetID = 'अपनी_SHEET_ID_यहाँ_डालें';
-    const base = https://docs.google.com/spreadsheets/d/10ltlUNKQsCl3FwE9XxYtiAV1uWRoUHlguG0zbhnPFrg/edit?usp=sharing;
+    // आपकी असली Google Sheet ID यहाँ सेट है
+    const sheetID = '13pXTGuq18pjmrELqdN7rLnLN5p_nwg0DIqlqHA0_agw';
+    const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
     fetch(base)
         .then(res => res.text())
@@ -41,33 +49,40 @@
             let html = '';
 
             rows.forEach(row => {
-                const name = row.c[0] ? row.c[0].v : "ग्रामीण";
-                const subject = row.c[1] ? row.c[1].v : "";
+                // कॉलम मैपिंग: A=0(Name), B=1(Subject), C=2(Details), D=3(Photo), E=4(Status)
+                const name = row.c[0] ? row.c[0].v : "ग्रामीण निवासी";
+                const subject = row.c[1] ? row.c[1].v : "विशेष सूचना";
                 const details = row.c[2] ? row.c[2].v : "";
                 let photoUrl = row.c[3] ? row.c[3].v : "";
                 const status = row.c[4] ? row.c[4].v : "";
 
+                // केवल एडमिन द्वारा 'Approved' की गई जानकारी ही दिखेगी
                 if (status === "Approved") {
-                    // गूगल ड्राइव लिंक को डायरेक्ट इमेज लिंक में बदलना
                     let finalImgTag = '';
+                    // गूगल ड्राइव फोटो लिंक को डायरेक्ट लिंक में बदलना
                     if(photoUrl && photoUrl.includes('id=')) {
-                        let photoId = photoUrl.split('id=')[1];
+                        let photoId = photoUrl.split('id=')[1].split('&')[0];
                         let directLink = `https://lh3.googleusercontent.com/d/${photoId}`;
-                        finalImgTag = `<img src="${directLink}" class="post-img" style="display:block;">`;
+                        finalImgTag = `<img src="${directLink}" class="post-img" style="display:block;" onerror="this.style.display='none'">`;
                     }
 
                     html += `
                     <div class="post-card">
                         ${finalImgTag}
                         <h3>${subject}</h3>
-                        <p>${details}</p>
+                        <div class="post-content">${details}</div>
                         <div class="author-info">
-                            योगदानकर्ता: <span class="name-tag">${name}</span>
+                            <span>योगदानकर्ता: <span class="name-tag">${name}</span></span>
+                            <small>ग्राम उड़वारिया पोर्टल</small>
                         </div>
                     </div>`;
                 }
             });
-            document.getElementById('content-area').innerHTML = html || "अभी कोई फोटो उपलब्ध नहीं है।";
+
+            document.getElementById('content-area').innerHTML = html || "<p style='text-align:center; padding: 50px;'>अभी कोई जानकारी उपलब्ध नहीं है। कृपया जानकारी भेजें और एडमिन के अप्रूवल का इंतज़ार करें।</p>";
+        })
+        .catch(err => {
+            document.getElementById('content-area').innerHTML = "<p style='text-align:center; color:red;'>डेटा लोड करने में समस्या आई। कृपया पक्का करें कि आपने गूगल शीट को 'Publish to Web' किया है।</p>";
         });
 </script>
 
