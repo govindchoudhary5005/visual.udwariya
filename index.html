@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>उड़वारिया - यादें और इतिहास</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; }
+        header { background: #1a5276; color: white; padding: 30px; text-align: center; }
+        .container { max-width: 800px; margin: 20px auto; padding: 15px; }
+        .btn-add { display: block; background: #27ae60; color: white; text-align: center; padding: 15px; text-decoration: none; border-radius: 8px; margin-bottom: 25px; }
+        .post-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .post-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; display: none; } /* डिफ़ॉल्ट रूप से छुपी हुई */
+        h3 { color: #1a5276; margin: 10px 0; }
+        .author-info { margin-top: 15px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+        .name-tag { font-weight: bold; color: #d35400; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ग्राम उड़वारिया (रेवदर)</h1>
+    <p>गाँव की तस्वीरें और इतिहास साझा करें</p>
+</header>
+
+<div class="container">
+    <a href="आपका_गूगल_फॉर्म_लिंक" target="_blank" class="btn-add">+ फोटो और जानकारी साझा करें</a>
+    <div id="content-area">लोड हो रहा है...</div>
+</div>
+
+<script>
+    const sheetID = 'अपनी_SHEET_ID_यहाँ_डालें';
+    const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+
+    fetch(base)
+        .then(res => res.text())
+        .then(data => {
+            const temp = data.substring(47).slice(0, -2);
+            const json = JSON.parse(temp);
+            const rows = json.table.rows;
+            let html = '';
+
+            rows.forEach(row => {
+                const name = row.c[0] ? row.c[0].v : "ग्रामीण";
+                const subject = row.c[1] ? row.c[1].v : "";
+                const details = row.c[2] ? row.c[2].v : "";
+                let photoUrl = row.c[3] ? row.c[3].v : "";
+                const status = row.c[4] ? row.c[4].v : "";
+
+                if (status === "Approved") {
+                    // गूगल ड्राइव लिंक को डायरेक्ट इमेज लिंक में बदलना
+                    let finalImgTag = '';
+                    if(photoUrl && photoUrl.includes('id=')) {
+                        let photoId = photoUrl.split('id=')[1];
+                        let directLink = `https://lh3.googleusercontent.com/d/${photoId}`;
+                        finalImgTag = `<img src="${directLink}" class="post-img" style="display:block;">`;
+                    }
+
+                    html += `
+                    <div class="post-card">
+                        ${finalImgTag}
+                        <h3>${subject}</h3>
+                        <p>${details}</p>
+                        <div class="author-info">
+                            योगदानकर्ता: <span class="name-tag">${name}</span>
+                        </div>
+                    </div>`;
+                }
+            });
+            document.getElementById('content-area').innerHTML = html || "अभी कोई फोटो उपलब्ध नहीं है।";
+        });
+</script>
+
+</body>
+</html>
